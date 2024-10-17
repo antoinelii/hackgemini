@@ -54,7 +54,8 @@ def train_model(
 
     # Create DataLoaders
     train_loader = torch.utils.data.DataLoader(
-        dt_train, batch_size=batch_size, collate_fn=pad_collate, shuffle=True
+        dt_train, batch_size=batch_size, collate_fn=pad_collate, shuffle=True,
+        pin_memory=True,
         )
     
     print('Data Loaded Successfully!')
