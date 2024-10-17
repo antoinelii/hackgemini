@@ -146,6 +146,7 @@ def train_model(
             optimizer.step()
             running_loss +=  loss.item()
             
+            preds = torch.argmax(outputs, dim=1)
             # Move data from GPU/Metal to CPU
             targets = targets.cpu().numpy().flatten()
             preds = preds.cpu().numpy().flatten()
