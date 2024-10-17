@@ -104,12 +104,11 @@ def train_model(
 
         print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {epoch_loss}")
     print("Training complete.")
-    return model
 
 
 if __name__ == "__main__":
     # Example usage:
-    model = train_model(
+    train_model(
         data_folder=TRAIN_FILEPATH,
         nb_classes=20,
         input_channels=10,
