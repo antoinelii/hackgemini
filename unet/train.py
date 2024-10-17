@@ -8,7 +8,6 @@ from tqdm import tqdm
 
 from baseline.collate import pad_collate
 from baseline.dataset import BaselineDataset
-from baseline.loss import mIoULoss
 from unet.model import UNET
 
 TRAIN_FILEPATH = "/Users/33783/Desktop/capgemini/hackathon-mines-invent-2024/DATA/TRAIN"
@@ -121,8 +120,7 @@ def train_model(
     # Defining the model, optimizer and loss function
     model = UNET(in_channels=input_channels, classes=nb_classes).to(device).train()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    #loss_function = nn.CrossEntropyLoss() 
-    loss_function = mIoULoss()
+    loss_function = nn.CrossEntropyLoss() 
 
     # Loading a previous stored model from model_path variable
     if load_model == True:
@@ -142,11 +140,7 @@ def train_model(
             inputs, targets = inputs.to(device), targets.to(device)
 
             outputs = model(inputs)
-
-            # Get the predicted class per pixel (B, H, W)
-            preds = torch.argmax(outputs, dim=1)
-            #loss = loss_function(outputs, targets.long())
-            loss = loss_function(preds, targets.long())
+            loss = loss_function(outputs, targets.long())
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
