@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 from baseline.collate import pad_collate
 from baseline.dataset import BaselineDataset
+from baseline.loss import mIoULoss
 from unet.model import UNET
 
 TRAIN_FILEPATH = "/Users/33783/Desktop/capgemini/hackathon-mines-invent-2024/DATA/TRAIN"
@@ -115,7 +116,8 @@ def train_model(
     # Defining the model, optimizer and loss function
     model = UNET(in_channels=input_channels, classes=nb_classes).to(device).train()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    loss_function = nn.CrossEntropyLoss() 
+    #loss_function = nn.CrossEntropyLoss() 
+    loss_function = mIoULoss()
 
     # Loading a previous stored model from model_path variable
     if load_model == True:
