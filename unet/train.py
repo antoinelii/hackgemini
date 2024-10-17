@@ -87,6 +87,7 @@ def train_model(
     nb_classes: int,
     input_channels: int,
     model_path: None,
+    train_ratio : float = 0.1,
     preprocess_batch_fun = preprocess_batch_august,
     load_model: bool = False,
     num_epochs: int = 10,
@@ -98,12 +99,16 @@ def train_model(
     """
     Training pipeline.
     """
-    torch.manual_seed(1234)
     dt_train = BaselineDataset(Path(data_folder))
+
+    torch.manual_seed(1234)
+    train_size = int(train_ratio * len(dt_train))
+    val_size = len(dt_train) - train_size
+    train_dataset, val_dataset = torch.utils.data.random_split(dt_train, [train_size, val_size])
 
     # Create DataLoaders
     train_loader = torch.utils.data.DataLoader(
-        dt_train, batch_size=batch_size, collate_fn=pad_collate, shuffle=True,
+        train_dataset, batch_size=batch_size, collate_fn=pad_collate, shuffle=True,
         pin_memory=True,
         )
     
