@@ -143,14 +143,14 @@ def train_model(
 
             outputs = model(inputs)
 
-            loss = loss_function(outputs, targets.long())
+            # Get the predicted class per pixel (B, H, W)
+            preds = torch.argmax(outputs, dim=1)
+            #loss = loss_function(outputs, targets.long())
+            loss = loss_function(preds, targets.long())
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
             running_loss +=  loss.item()
-
-            # Get the predicted class per pixel (B, H, W)
-            preds = torch.argmax(outputs, dim=1)
             
             # Move data from GPU/Metal to CPU
             targets = targets.cpu().numpy().flatten()
