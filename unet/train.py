@@ -12,6 +12,54 @@ from unet.model import UNET
 
 TRAIN_FILEPATH = "/Users/33783/Desktop/capgemini/hackathon-mines-invent-2024/DATA/TRAIN"
 
+def print_iou_per_class(
+    targets: torch.Tensor,
+    preds: torch.Tensor,
+    nb_classes: int,
+) -> None:
+    """
+    Compute IoU between predictions and targets, for each class.
+
+    Args:
+        targets (torch.Tensor): Ground truth of shape (B, H, W).
+        preds (torch.Tensor): Model predictions of shape (B, nb_classes, H, W).
+        nb_classes (int): Number of classes in the segmentation task.
+    """
+
+    # Compute IoU for each class
+    # Note: I use this for loop to iterate also on classes not in the demo batch
+
+    iou_per_class = []
+    for class_id in range(nb_classes):
+        iou = jaccard_score(
+            targets == class_id,
+            preds == class_id,
+            average="binary",
+            zero_division=0,
+        )
+        iou_per_class.append(iou)
+
+    for class_id, iou in enumerate(iou_per_class):
+        print(
+            "class {} - IoU: {:.4f} - targets: {} - preds: {}".format(
+                class_id, iou, (targets == class_id).sum(), (preds == class_id).sum()
+            )
+        )
+
+
+def print_mean_iou(targets: torch.Tensor, preds: torch.Tensor) -> None:
+    """
+    Compute mean IoU between predictions and targets.
+
+    Args:
+        targets (torch.Tensor): Ground truth of shape (B, H, W).
+        preds (torch.Tensor): Model predictions of shape (B, nb_classes, H, W).
+    """
+
+    mean_iou = jaccard_score(targets, preds, average="macro")
+    print(f"meanIOU (over existing classes in targets): {mean_iou:.4f}")
+
+
 def preprocess_batch_august(input_batch):
     """
     Here we want to use the collapse the temporal dimension of the input
@@ -93,6 +141,18 @@ def train_model(
             loss.backward()
             optimizer.step()
             running_loss +=  loss.item()
+
+            # Get the predicted class per pixel (B, H, W)
+            preds = torch.argmax(outputs, dim=1)
+            
+            # Move data from GPU/Metal to CPU
+            targets = targets.cpu().numpy().flatten()
+            preds = preds.cpu().numpy().flatten()
+
+            if verbose:
+                # Print IOU for debugging
+                print_iou_per_class(targets, preds, nb_classes)
+                print_mean_iou(targets, preds)
             
         epoch_loss = running_loss / len(train_loader)
         loss_values.append(epoch_loss) 
