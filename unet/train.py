@@ -81,13 +81,23 @@ def preprocess_batch_august(input_batch):
 
     return collapsed_input_batch
 
+def preprocess_batch_median(input_batch):
+    """
+    Here we want to use the collapse the temporal dimension of the input
+    batch by keeping the median value for each pixel
+
+    input_batch: dataloader X dict batch
+    """
+    median_batch = torch.median(input_batch["S2"], dim=1, keepdim=False).values
+    return median_batch
+
 def train_model(
     data_folder: Path,
     nb_classes: int,
     input_channels: int,
     model_path: None,
     train_ratio : float = 0.1,
-    preprocess_batch_fun = preprocess_batch_august,
+    preprocess_batch_fun = preprocess_batch_median,
     load_model: bool = False,
     num_epochs: int = 10,
     batch_size: int = 8,
