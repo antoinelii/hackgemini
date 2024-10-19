@@ -134,7 +134,10 @@ def train_model(
 
     # Loading a previous stored model from model_path variable
     if load_model == True:
-        checkpoint = torch.load(model_path)
+        if device == "cuda":
+            checkpoint = torch.load(model_path)
+        elif device == "cpu":
+            checkpoint = torch.load(model_path, map_location=torch.device('cpu'))
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optim_state_dict'])
         epoch = checkpoint['epoch'] + 1
