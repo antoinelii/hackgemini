@@ -157,7 +157,7 @@ def train_model(
     
     min_valid_loss = math.inf
 
-    for e in tqdm(range(num_epochs)):
+    for e in tqdm(range(epoch, num_epochs)):
         print(f'Epoch start: {e}')
         train_loss = 0.0
         model.train()
