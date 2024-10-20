@@ -135,6 +135,8 @@ def train_model(
     train_loss_values = [] # Defining a list to store loss values after every epoch
     val_loss_values = []
 
+    class_weights = CLASS_WEIGHTS.to(device)
+    
     # Defining the model, optimizer and loss function
     model = UNet3D(in_add_features=3, in_channels=input_channels , num_classes= nb_classes).to(device).train()
     criterion = nn.CrossEntropyLoss(weight=class_weights)
@@ -152,8 +154,6 @@ def train_model(
         train_loss_values = checkpoint['train_loss_values']
         val_loss_values = checkpoint['val_loss_values']
         print("Model successfully loaded!")
-
-    class_weights = CLASS_WEIGHTS.to(device)
     
     min_valid_loss = math.inf
 
