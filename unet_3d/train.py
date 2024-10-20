@@ -189,8 +189,8 @@ def train_model(
         
         print("Validation complete.")
 
-        train_loss_values = train_loss_values.append(train_loss)
-        val_loss_values = val_loss_values.append(valid_loss)
+        #train_loss_values = train_loss_values.append(train_loss)
+        #val_loss_values = val_loss_values.append(valid_loss)
         print(f'Epoch {epoch+1} \t\t Training Loss: {train_loss / len(train_loader)} \t\t Validation Loss: {valid_loss / len(val_loader)}')
         
         if min_valid_loss > valid_loss:
