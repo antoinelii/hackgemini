@@ -9,6 +9,14 @@ import pandas as pd
 import geopandas as gpd
 import numpy as np
 import torch
+import torch.utils
+
+from baseline.collate import pad_collate
+
+tile_mapping = {'t30uxv': 0.,
+                't31tfj': 1.,
+                't31tfm': 2.,
+                't32ulu': 3.}
 
 def parse_timestamps(patch_id, metadata):
     """
@@ -60,8 +68,7 @@ class BaselineDataset(torch.utils.data.Dataset):
         # data["radar"] = ...
         data["date"] = parse_timestamps(id_patch, self.meta_patch)
         tile_name = self.meta_patch["TILE"][id_patch]
-        tile_ascii = [ord(char) for char in tile_name]
-        data["TILE"] = torch.tensor(tile_ascii)
+        data["TILE"] = torch.tensor([tile_mapping[tile_name]])
         data["N_Parcel"] = torch.tensor([self.meta_patch["N_Parcel"][id_patch]])
         data["Parcel_Cover"] = torch.tensor([self.meta_patch["Parcel_Cover"][id_patch]])
 
@@ -104,9 +111,43 @@ class BaselineDatatest(torch.utils.data.Dataset):
         # data["radar"] = ...
         data["date"] = parse_timestamps(id_patch, self.meta_patch)
         tile_name = self.meta_patch["TILE"][id_patch]
-        tile_ascii = [ord(char) for char in tile_name]
-        data["TILE"] = torch.tensor(tile_ascii)
+        data["TILE"] = torch.tensor([tile_mapping[tile_name]])
         data["N_Parcel"] = torch.tensor([self.meta_patch["N_Parcel"][id_patch]])
         data["Parcel_Cover"] = torch.tensor([self.meta_patch["Parcel_Cover"][id_patch]])
 
         return data
+    
+
+def get_train_val_Dataloaders(
+        dt_train: torch.utils.data.Dataset,
+        train_ratio: float=0.8,
+        train_batch_size: int=8,
+        val_batch_size: int=8,
+        ) -> tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader]:
+    # Set seeds for PyTorch
+    torch.manual_seed(42)
+
+    # Split dataset: train_ratio train, (1 - train_ratio) val
+    train_size = int(train_ratio * len(dt_train))
+    val_size = len(dt_train) - train_size
+    train_dataset, val_dataset = torch.utils.data.random_split(dt_train, [train_size, val_size])
+
+    # Create DataLoaders
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=train_batch_size, collate_fn=pad_collate, shuffle=True
+        )
+    val_loader = torch.utils.data.DataLoader(
+        val_dataset, batch_size=val_batch_size, collate_fn=pad_collate, shuffle=False
+        )
+
+    return train_loader, val_loader
+
+def get_test_Dataloader(
+        dt_test: torch.utils.data.Dataset,
+        test_batch_size: int=8
+    ) -> torch.utils.data.DataLoader:
+    test_loader = torch.utils.data.DataLoader(
+        dt_test, batch_size=test_batch_size, collate_fn=pad_collate, shuffle=False
+        )
+
+    return test_loader
