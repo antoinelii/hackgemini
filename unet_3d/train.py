@@ -157,8 +157,8 @@ def train_model(
     
     min_valid_loss = math.inf
 
-    for e in range(num_epochs):
-        
+    for e in tqdm(range(num_epochs)):
+        print(f'Epoch start: {e}')
         train_loss = 0.0
         model.train()
         for i, (inputs, targets) in tqdm(enumerate(train_loader), total=len(train_loader)):
@@ -179,7 +179,7 @@ def train_model(
             inputs, inputs_vector = preprocess_batch_fun(inputs)
             inputs, inputs_vector, targets = inputs.to(device), inputs_vector.to(device), targets.to(device)
             targets = targets.unsqueeze(1).expand(-1, 8, -1,-1)
-            
+
             outputs = model(inputs, inputs_vector)
             loss = criterion(outputs,targets.long())
             valid_loss = loss.item()
