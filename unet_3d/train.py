@@ -197,7 +197,7 @@ def train_model(
                 'epoch': e,
                 'train_loss_values': train_loss_values,
                 'val_loss_values': val_loss_values,
-            }, f'models/unet3d_epoch{e}_valLoss{min_valid_loss}.pth')
+            }, f'unet3d_epoch{e}_valLoss{min_valid_loss}.pth')
 
     print("Training complete.")
 
