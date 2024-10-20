@@ -162,6 +162,7 @@ def train_model(
         train_loss = 0.0
         model.train()
         for i, (inputs, targets) in tqdm(enumerate(train_loader), total=len(train_loader)):
+            print(f"Epoch {e}, Batch{i}")
             inputs, inputs_vector = preprocess_batch_fun(inputs)
             targets = targets.unsqueeze(1).expand(-1, 8, -1,-1)
             inputs, inputs_vector, targets = inputs.to(device), inputs_vector.to(device), targets.to(device)
@@ -173,6 +174,8 @@ def train_model(
             optimizer.step()
             train_loss += loss.item()
         
+        print("Training complete.")
+
         valid_loss = 0.0
         model.eval()
         for i, (inputs, targets) in tqdm(enumerate(val_loader), total=len(val_loader)):
@@ -184,6 +187,8 @@ def train_model(
             loss = criterion(outputs,targets.long())
             valid_loss = loss.item()
         
+        print("Validation complete.")
+
         train_loss_values = train_loss_values.append(train_loss)
         val_loss_values = val_loss_values.append(valid_loss)
         print(f'Epoch {epoch+1} \t\t Training Loss: {train_loss / len(train_loader)} \t\t Validation Loss: {valid_loss / len(val_loader)}')
@@ -199,8 +204,6 @@ def train_model(
                 'train_loss_values': train_loss_values,
                 'val_loss_values': val_loss_values,
             }, f'unet3d_epoch{e}_valLoss{min_valid_loss}.pth')
-
-    print("Training complete.")
 
 
 if __name__ == "__main__":
