@@ -136,7 +136,7 @@ def train_model(
     val_loss_values = []
 
     class_weights = CLASS_WEIGHTS.to(device)
-    
+
     # Defining the model, optimizer and loss function
     model = UNet3D(in_add_features=3, in_channels=input_channels , num_classes= nb_classes).to(device).train()
     criterion = nn.CrossEntropyLoss(weight=class_weights)
@@ -178,6 +178,7 @@ def train_model(
         for i, (inputs, targets) in tqdm(enumerate(val_loader), total=len(val_loader)):
             inputs, inputs_vector = preprocess_batch_fun(inputs)
             inputs, inputs_vector, targets = inputs.to(device), inputs_vector.to(device), targets.to(device)
+            targets = targets.unsqueeze(1).expand(-1, 8, -1,-1)
             
             outputs = model(inputs, inputs_vector)
             loss = criterion(outputs,targets.long())
