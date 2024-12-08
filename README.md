@@ -19,6 +19,8 @@ Input: sequences of T satellite images, centered on ~1km x ~1km zones.
 Output: The ground truth (the target) is a semantic segmentation mask of the crop types in the images (20 classes)
 
 ## Proposed solution
+As a first draft, we first tried to segment using a single image instead of the time sequence in order to tackle the heterogeneous data issue and. We selected an image of the month of August as it has more chance of having good weather and being free of clouds. We first started with a simple U-NET and reached an meanIoU score of 10%. This bad result confirms the importance of using temporal information for this crop type segmentation task.
+
 ### Preprocessing
 The samples are first prepocessed to reduce dimensionality and uniformize between the different samples that can have various number T of acquisition times.
 The preprocessing chosen is pretty simple due to time constraints. It consists in having one image per month where for each pixel the computed is the median value on images from the same month.
