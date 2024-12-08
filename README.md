@@ -26,7 +26,7 @@ We obtain (12,10,128,128) size tensors from (T,10,128,128) tensors.
 Despite its simplicity this preprocessing can filter out images perturbations and extremal values caused by clouds for instance.
 
 ### Model
-The proposed model consists in a 3D U-NET that inputs a tensor of shape (12,10,128,128) and outputs...
+The proposed model consists in a 3D U-NET that inputs a tensor of shape (12,10,128,128) and outputs a (12,20,128,128) shape tensor. Ideally, we would have wanted a (20,128,128) shaped output to provide a multiclass segmentation output however the architecture used doesn't allow such output shape. Thus we trained it on (20, 128, 128) labels repeated 12 times to have a (12, 20, 128, 128) target. For inference, we then take the max on each pixel over the 20 classes of the output.
 
 ### Results
 For the mean Intersection over Union (mIoU) metrics we obtain a score of 38% on the test dataset.
