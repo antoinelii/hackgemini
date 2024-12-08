@@ -28,6 +28,13 @@ Despite its simplicity this preprocessing can filter out images perturbations an
 ### Model
 The proposed model consists in a 3D U-NET that inputs a tensor of shape (12,10,128,128) and outputs...
 
+### Results
+For the mean Intersection over Union (mIoU) metrics we obtain a score of 38% on the test dataset.
+This can be seen as a relatively poor score but the metric used is kinda hard and the state-of-the-art models don't go above 70%. 
+The image below provides a visual idea of how good our segmentation performs.
+
+![Results image](img/crop_segmentation_example.png)
+
 Key resources
 
     Dataset : https://github.com/VSainteuf/pastis-benchmark
