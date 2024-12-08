@@ -1,19 +1,15 @@
 # Segment agricultural parcels from satellite times series (Capgemini x Mines de Paris Hackathon 2024)
 
-## Overview
-Welcome to the Capgemini Invent 2024 Data Challenge!
+As a student at Ecole des Mines de Paris, I had the opportunity to participate to this challenge proposed by Capgemini Invent in 2024
 
-We are excited to have you join this year's data challenge. For this new edition, you are asked to tackle a real-world problem using satellite imagery.
-
-At Capgemini Invent, we have already demonstrated the power of satellite image analysis by detecting undeclared swimming pools and classifying agricultural parcels for government programs. By leveraging data-driven insights, businesses and authorities can unlock new opportunities and enhance operational efficiencies.
-
-## The Challenge
+## Challenge description
 
 In this competition, you will face the task of segmenting time series of satellite images to predict the type of crop being grown on various agricultural parcels. The time series data reflects changes in crop appearance throughout the growing season, and your model will need to capture these dynamics to produce accurate predictions.
 
 This challenge will test your ability to work with time series data, satellite imagery, and geospatial analytics, offering a unique and meaningful opportunity to contribute to an important cause while honing your technical skills.
 
-## Data
+### Data
+The challenge is based on the Sentinel-2 data from the PASTIS dataset from Vivien Sainte Fare Garnot and Loic Landrieu.
 Input: sequences of T satellite images, centered on ~1km x ~1km zones.
 
     Each image is of shape (10, 128, 128) (channel-first convention), i.e. the images are (128, 128) and have 10 channels.
@@ -22,6 +18,19 @@ Input: sequences of T satellite images, centered on ~1km x ~1km zones.
 
 Output: The ground truth (the target) is a semantic segmentation mask of the crop types in the images (20 classes)
 
+## Proposed solution
+### Preprocessing
+The samples are first prepocessed to reduce dimensionality and uniformize between the different samples that can have various number T of acquisition times.
+The preprocessing chosen is pretty simple due to time constraints. It consists in having one image per month where for each pixel the computed is the median value on images from the same month.
+We obtain (12,10,128,128) size tensors from (T,10,128,128) tensors.
+Despite its simplicity this preprocessing can filter out images perturbations and extremal values caused by clouds for instance.
+
+### Model
+The proposed model consists in a 3D U-NET that inputs a tensor of shape (12,10,128,128) and outputs...
+
 Key resources
 
+    Dataset : https://github.com/VSainteuf/pastis-benchmark
     Kaggle competition: https://www.kaggle.com/competitions/data-challenge-invent-mines-2024
+    Competition repo: https://github.com/LouisStefanuto/hackathon-mines-invent-2024/tree/main
+    U-Net: https://github.com/hamdaan19/UNet-Multiclass/tree/main
